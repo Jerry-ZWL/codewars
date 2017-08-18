@@ -103,7 +103,10 @@ function getGeneration(cells, generations) {
     if (generations == 1) {
        evolve(CopyPointsValueMap);
        return CopyCells;
-    } else{
+    } else if (generations == 0){
+        return cells;
+    }
+    else{
         evolve(CopyPointsValueMap);
         console.log('inCursive ',  CopyCells);
         return getGeneration (CopyCells, generations -1);
