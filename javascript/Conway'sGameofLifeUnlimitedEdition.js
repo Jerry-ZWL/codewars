@@ -2,6 +2,18 @@
 // live > 3  die
 // live 2 3 live to next generation
 // dead with exactly 3 live neighborhood become live
+// (0,0) (0,1) (0,2)
+// (1,0) (1,1) (1,2)
+// (2,0) (2,1) (2,2)
+
+// https://stackoverflow.com/questions/28762377/javascript-arrays-given-arrayn-get-arraynm
+var array2 = array1.reduce(function(prev, curr) {
+    return prev.concat(curr.tels.map(function(tel) {
+        return { name: curr.name, tel: tel };
+    }));
+}, []);
+
+
 
 var gliders = [
     [
@@ -13,19 +25,13 @@ var gliders = [
         [0, 1, 0],
         [0, 0, 1],
         [1, 1, 1]
+    ],
+    [
+        [0, 0, 0],
+        [1, 0, 1],
+        [0, 1, 1]   
     ]
 ];
-
-// (0,0) (0,1) (0,2)
-// (1,0) (1,1) (1,2)
-// (2,0) (2,1) (2,2)
-
-// https://stackoverflow.com/questions/28762377/javascript-arrays-given-arrayn-get-arraynm
-var array2 = array1.reduce(function(prev, curr) {
-    return prev.concat(curr.tels.map(function(tel) {
-        return { name: curr.name, tel: tel };
-    }));
-}, []);
 
 function getGeneration(cells, generations) {
     var len = cells.length;
@@ -76,11 +82,16 @@ function getGeneration(cells, generations) {
             }
         }
     };
-    console.log('cells', cells);
+   
     // var mutableMap = Object.assign({}, pointsValueMap)
-    var CopyCells = [...cells];
-    var CopyPointsValueMap = Object.assign({}, pointsValueMap);
-    for (var i = 0; i < generations; i++) {
+    var CopyCells = cells.map(function(arr) {
+        return  arr.slice();
+    })
+    var CopyPointsValueMap = Object.assign({}, pointsValueMap); 
+    console.log('cells', cells);
+    console.log('CopyCells', CopyCells);
+    console.log('CopyPointsValueMap', CopyPointsValueMap);
+    function evolve (CopyPointsValueMap){
         var mutableMap = Object.assign({}, CopyPointsValueMap);
         console.log('allPoints ', allPoints);
         allPoints.reduce(function(pre, curr) {
@@ -89,9 +100,14 @@ function getGeneration(cells, generations) {
         allPoints.map((v, i) => { CopyCells[v[0]][v[1]] = mutableMap[v]; });
     }
 
-    console.log('after cells', cells);
-    console.log(CopyCells);
-    return CopyCells;
+    if (generations == 1) {
+       evolve(CopyPointsValueMap);
+       return CopyCells;
+    } else{
+        evolve(CopyPointsValueMap);
+        console.log('inCursive ',  CopyCells);
+        return getGeneration (CopyCells, generations -1);
+    }
 }
 
 //  var resp = getGeneration(gliders[0],1);
