@@ -102,6 +102,25 @@ function getGeneration(cells, generations) {
             else return false;
         }
     }
+    function firstNonZero (arr){ 
+        var n = 0;
+        var i = 0;
+        while(arr[i] == 0){ n +=1;i +=1;}
+        return n;}
+
+    function findRepeatTimes(arrs) {
+        var temp = [];
+        var leftToRight = arrs.reduce((pr, cr) => {var firstHit = firstNonZero(cr);
+                                                    pr = pr < firstHit ? pr : firstHit;
+                                                    return pr;})
+        temp.push(leftToRight);
+        var leftToRight = arrs.reduce((pr, cr) => {var firstHit = firstNonZero(cr.reverse());
+            pr = pr < firstHit ? pr : firstHit;
+            return pr;})
+        temp.push(rightToLeft);
+        return temp;
+    }
+    //var za  =[[0, 0, 0, 1, 2, 3, 0, 0], [0, 5, 4, 1, 2, 3, 0, 0], [0, 0, 0, 1, 2, 0, 0, 0]]
     // var arr = [[0, 0, 0], [1, 2, 3], [0, 1, 0], [0, 0, 1], [0, 0, 0], [0, 0, 0]]
     //for [1, 2, 3], [0, 1, 0], [0, 0, 1] need to think about the edge first befor croping
     function croppedArray(arr) {
