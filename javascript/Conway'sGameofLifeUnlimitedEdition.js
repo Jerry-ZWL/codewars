@@ -130,9 +130,12 @@ function getGeneration(cells, generations) {
         }
     }
     function firstNonZero (arr){ 
-        if (arr[0] == 0) {var n = 0;        
-        while(arr[i] == 0){ n +=1;}
-        return n;} else {return 0;}}
+        if (arr[0] == 0) {
+            var n = 0;        
+            while(arr[n] == 0){ n +=1;}
+            return n;}  else 
+            {return 0;}
+        }
 //[ [ 0, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 1 ], [ 0, 0, 1, 1, 0 ] ]
     function findRepeatTimes(arrs) {
         var copyArrs =arrs.map(function(arr) {
@@ -143,12 +146,14 @@ function getGeneration(cells, generations) {
                                                     pr = pr < firstHit1 ? pr : firstHit1;
                                                     // console.log('ltr ' + pr);
                                                     return pr;}, firstNonZero(copyArrs[0]))
+        console.log(leftToRight);                                                            
         temp.push(leftToRight);
         var rightToLeft = copyArrs.reduce((pr, cr) => {var firstHit2 = firstNonZero(cr.reverse());
             // console.log('firsthit2 ' + firstHit2)
             pr = pr < firstHit2 ? pr : firstHit2;
             // console.log('rtl ' + pr)
             return pr;}, firstNonZero(copyArrs[0].reverse()))
+        console.log(rightToLeft);   
         temp.push(rightToLeft);
         return temp;
     }
@@ -171,8 +176,8 @@ function getGeneration(cells, generations) {
         console.log("arr",repeatTimesArr);
         console.log("before", arrs);    
         arrs.map((u, i) => {
-               if(repeatTimesArr[1] > 0) for(var j=0; j < repeatTimesArr[1]; j++){u.shift();}
-               if(repeatTimesArr[0] > 0) for(var j=0; j< repeatTimesArr[0]; j++) {u.pop();}}
+                for(var j=0; j < repeatTimesArr[0]; j++){u.shift();}
+                for(var j=0; j< repeatTimesArr[1]; j++) {u.pop();}}
         );
         console.log("after", arrs);
     }
@@ -229,3 +234,63 @@ function getGeneration(cells, generations) {
 }
 
 //  var resp = getGeneration(gliders[0],1);
+
+
+
+//best practice
+function getGeneration(cells, generations){
+    
+      var ce = JSON.parse(JSON.stringify(cells));
+    
+      var minY;
+      var maxY;
+      var minX;
+      var maxX;
+    
+      for (var i = 1; i <= generations; i++) {
+        expandUniverse();
+    
+        ce = ce.map(function(r, row){return r.map(function(c, col){return setValue(row, col, -c);});});
+    
+        getBoundaries();
+        shrinkUniverse();
+      }
+    
+      function setValue(row, col, sum) {
+        for (var r = row - 1; r <= row + 1; r++)
+          for (var c = col - 1; c <= col + 1; c++)
+            sum += (ce[r] && ce[r][c]) | 0;
+    
+        return +(sum == 3 || sum == 2 && ce[row][col]);
+      }
+    
+      function getBoundaries() {
+        minY = maxY = minX = maxX = -1;
+        
+        ce.forEach(function(r, row){r.forEach(function(c, col){
+          if (c == 1) {
+            minY = minY == -1 ? row : Math.min(minY, row);
+            maxY = maxY == -1 ? row : Math.max(maxY, row);
+            minX = minX == -1 ? col : Math.min(minX, col);
+            maxX = maxX == -1 ? col : Math.max(maxX, col);
+          }
+        });});
+      }
+    
+      function expandUniverse() {
+        var a = [], b = [];
+    
+        ce[0].forEach(function(){a.push(0); b.push(0);});
+    
+        ce.unshift(a);
+        ce.push(b);
+        ce.map(function(i){i.unshift(0); i.push(0);});
+      }
+    
+      function shrinkUniverse() {
+        ce = ce.map(function(e){ return e.slice(minX, maxX + 1);});
+        ce = ce.slice(minY, maxY + 1);
+      }
+    
+      return ce;
+    }
