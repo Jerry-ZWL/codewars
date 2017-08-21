@@ -32,7 +32,7 @@ var example = [
         [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0],
         [0, 1, 0, 1, 0],
-        [0, 1, 1, 1, 0],
+        [0, 0, 1, 1, 0],
         [0, 0, 1, 0, 0]
     ]
 ];
@@ -120,15 +120,19 @@ function getGeneration(cells, generations) {
 
     function findRepeatTimes(arrs) {
         var copyArrs =arrs.map(function(arr) {
-            return arr.slice();})
+            return arr.slice();})    
         var temp = [];
-        var leftToRight = copyArrs.reduce((pr, cr) => {var firstHit = firstNonZero(cr);
-                                                    pr = pr < firstHit ? pr : firstHit;
-                                                    return pr;})
+        var leftToRight = copyArrs.reduce((pr, cr) => {var firstHit1 = firstNonZero(cr);
+                                                    // console.log('fisthit1 ' + firstHit1)
+                                                    pr = pr < firstHit1 ? pr : firstHit1;
+                                                    // console.log('ltr ' + pr);
+                                                    return pr;}, firstNonZero(copyArrs[0]))
         temp.push(leftToRight);
-        var rightToLeft = copyArrs.reduce((pr, cr) => {var firstHit = firstNonZero(cr.reverse());
-            pr = pr < firstHit ? pr : firstHit;
-            return pr;})
+        var rightToLeft = copyArrs.reduce((pr, cr) => {var firstHit2 = firstNonZero(cr.reverse());
+            // console.log('firsthit2 ' + firstHit2)
+            pr = pr < firstHit2 ? pr : firstHit2;
+            // console.log('rtl ' + pr)
+            return pr;}, firstNonZero(copyArrs[0].reverse()))
         temp.push(rightToLeft);
         return temp;
     }
@@ -176,7 +180,7 @@ function getGeneration(cells, generations) {
                 mutablemap[coord] = 1;
             }
         }
-        console.log('mutable', mutablemap);
+       // console.log('mutable', mutablemap);
     };
 
     var edgedCells = mapToArray(pointsValueMap);
