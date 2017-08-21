@@ -34,10 +34,26 @@ var example = [
         [0, 1, 0, 1, 0],
         [0, 0, 1, 1, 0],
         [0, 0, 1, 0, 0]
+    ],
+    [
+        [0, 0, 0, 0, 0],                        // 0 0 0 0 0
+        [0, 1, 0, 1, 0],                        // 0 0 0 1 0   
+        [0, 0, 1, 1, 0],                        // 0 1 0 1 0  
+        [0, 0, 1, 0, 0],                        // 0 0 1 1 0  
+        [0, 0, 0, 0, 0]                         // 0 0 0 0 0
+    ],
+    [
+        [0, 0, 0, 0, 0],                        //0 0 0 0 0 
+        [0, 0, 0, 1, 0],                        //0 0 1 0 0
+        [0, 1, 0, 1, 0],                        //0 0 0 1 1
+        [0, 0, 1, 1, 0],                        //0 0 1 1 0
+        [0, 0, 0, 0, 0]                         //0 0 0 0 0
     ]
 ];
 
-
+// 1 0 0
+// 0 1 1
+// 1 1 0
 
 var gliders = [
     [
@@ -58,6 +74,7 @@ var gliders = [
 ];
 
 function getGeneration(cells, generations) {
+    if (cells == 0) return [[]];
     var rows = cells.length;
     var columns = cells[0].length;
     var len = rows > columns ? rows : columns;
@@ -113,11 +130,10 @@ function getGeneration(cells, generations) {
         }
     }
     function firstNonZero (arr){ 
-        var n = 0;
-        var i = 0;
-        while(arr[i] == 0){ n +=1;i +=1;}
-        return n;}
-
+        if (arr[0] == 0) {var n = 0;        
+        while(arr[i] == 0){ n +=1;}
+        return n;} else {return 0;}}
+//[ [ 0, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 1 ], [ 0, 0, 1, 1, 0 ] ]
     function findRepeatTimes(arrs) {
         var copyArrs =arrs.map(function(arr) {
             return arr.slice();})    
@@ -150,12 +166,13 @@ function getGeneration(cells, generations) {
         while(same(deadArray, arrs[arrs.length - 1])) {
             console.log(same(deadArray, arrs[arrs.length - 1]));
             arrs.pop();}
+        if (arrs == 0) return [[]];        
         var repeatTimesArr = findRepeatTimes(arrs);
         console.log("arr",repeatTimesArr);
         console.log("before", arrs);    
         arrs.map((u, i) => {
-                for(var j=0; j < repeatTimesArr[1]; j++){u.shift();}
-                for(var j=0; j< repeatTimesArr[0]; j++) {u.pop();}}
+               if(repeatTimesArr[1] > 0) for(var j=0; j < repeatTimesArr[1]; j++){u.shift();}
+               if(repeatTimesArr[0] > 0) for(var j=0; j< repeatTimesArr[0]; j++) {u.pop();}}
         );
         console.log("after", arrs);
     }
