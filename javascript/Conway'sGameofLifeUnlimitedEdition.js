@@ -16,6 +16,13 @@ var array2 = array1.reduce(function(prev, curr) {
 var example = [
     [
         [0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0],
+        [0, 0, 1, 1, 0],
+        [0, 1, 1, 0, 0],
+        [0, 0, 0, 0, 0]
+    ],
+    [
+        [0, 0, 0, 0, 0],
         [0, 0, 1, 0, 0],
         [0, 0, 0, 1, 0],
         [0, 1, 1, 1, 0],
@@ -64,6 +71,7 @@ function getGeneration(cells, generations) {
         return p;
     }, {});
 
+    console.log("pointsValueMap", pointsValueMap);
     // Given point [x, y], find the neighborhoodPoints 
     var neighborhoodPoints = function(coord) {
         var x = coord[0];
@@ -89,7 +97,7 @@ function getGeneration(cells, generations) {
         }
         return temp;
     }
-
+    console.log('addedArrays',  mapToArray(pointsValueMap));
     function same(arr1, arr2) {
         if (Array.isArray(arr1) && Array.isArray(arr2)) {
             var arr1Copy = [...arr1];
@@ -111,12 +119,14 @@ function getGeneration(cells, generations) {
         return n;}
 
     function findRepeatTimes(arrs) {
+        var copyArrs =arrs.map(function(arr) {
+            return arr.slice();})
         var temp = [];
-        var leftToRight = arrs.reduce((pr, cr) => {var firstHit = firstNonZero(cr);
+        var leftToRight = copyArrs.reduce((pr, cr) => {var firstHit = firstNonZero(cr);
                                                     pr = pr < firstHit ? pr : firstHit;
                                                     return pr;})
         temp.push(leftToRight);
-        var rightToLeft = arrs.reduce((pr, cr) => {var firstHit = firstNonZero(cr.reverse());
+        var rightToLeft = copyArrs.reduce((pr, cr) => {var firstHit = firstNonZero(cr.reverse());
             pr = pr < firstHit ? pr : firstHit;
             return pr;})
         temp.push(rightToLeft);
@@ -126,6 +136,8 @@ function getGeneration(cells, generations) {
     // var arr = [[0, 0, 0], [1, 2, 3], [0, 1, 0], [0, 0, 1], [0, 0, 0], [0, 0, 0]]
     //for [1, 2, 3], [0, 1, 0], [0, 0, 1] need to think about the edge first befor croping
     function croppedArray(arrs) {
+        console.log('len' + len);
+        console.log('arrs', arrs)
         var n = len + 2;
         var deadArray = Array(n).fill(0);       
         while(same(deadArray, arrs[0])) {
@@ -136,19 +148,17 @@ function getGeneration(cells, generations) {
             arrs.pop();}
         var repeatTimesArr = findRepeatTimes(arrs);
         console.log("arr",repeatTimesArr);
-
+        console.log("before", arrs);    
         arrs.map((u, i) => {
                 for(var j=0; j < repeatTimesArr[1]; j++){u.shift();}
                 for(var j=0; j< repeatTimesArr[0]; j++) {u.pop();}}
         );
+        console.log("after", arrs);
     }
-
-
-
     var valueNow = function(coord, fixmap, mutablemap) {
         var neighborhoodCells = neighborhoodPoints(coord);
         var it = fixmap[coord];
-        console.log('it' + it);
+        console.log('it ' + it);
         console.log('coord', coord);
         var liveCells = neighborhoodCells.reduce((pr, cr) => {
             if (fixmap[cr] == 1) {
@@ -166,14 +176,10 @@ function getGeneration(cells, generations) {
                 mutablemap[coord] = 1;
             }
         }
+        console.log('mutable', mutablemap);
     };
 
     var edgedCells = mapToArray(pointsValueMap);
-
-    // var mutableMap = Object.assign({}, pointsValueMap)
-    var CopyCells = cells.map(function(arr) {
-        return arr.slice();
-    })
     var CopyPointsValueMap = Object.assign({}, pointsValueMap);
     console.log('edgedCells', edgedCells);
     console.log('CopyPointsValueMap', CopyPointsValueMap);
@@ -184,18 +190,20 @@ function getGeneration(cells, generations) {
         allPoints.reduce(function(pre, curr) {
             valueNow(curr, CopyPointsValueMap, mutableMap);
         }, 0);
-        allPoints.map((v, i) => { edgedCells[v[0]][v[1]] = mutableMap[v]; });
+        allPoints.map((v, i) => {edgedCells[v[0]][v[1]] = mutableMap[v]; });
+        console.log('edgedCellsFinal', edgedCells)
+        croppedArray(edgedCells);
     }
 
     if (generations == 1) {
         evolve(CopyPointsValueMap);
-        return CopyCells;
+        return edgedCells;
     } else if (generations == 0) {
         return cells;
     } else {
         evolve(CopyPointsValueMap);
-        console.log('inCursive ', CopyCells);
-        return getGeneration(CopyCells, generations - 1);
+        console.log('inCursive ', edgedCells);
+        return getGeneration(edgedCells, generations - 1);
     }
 }
 
