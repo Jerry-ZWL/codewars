@@ -102,19 +102,26 @@ function getGeneration(cells, generations) {
             else return false;
         }
     }
-
+    // var arr = [[0, 0, 0], [1, 2, 3], [0, 1, 0], [0, 0, 1], [0, 0, 0], [0, 0, 0]]
+    //for [1, 2, 3], [0, 1, 0], [0, 0, 1] need to think about the edge first befor croping
     function croppedArray(arr) {
         var deadArray = Array(len + 2).fill(0);
         var i = 0;
         var n = len + 2;
         while (same(deadArray, arr[0])) {
-            console.log(same(deadArray, arr[i]));
             arr.shift();
         }
         while (same(deadArray, arr[arr.length - 1])) {
-            console.log(same(deadArray, arr[arr.length - 1]));
             arr.pop();
         }
+        arr.map((u, i) => {
+            while (same(0, u[0])) {
+                u.shift();
+            }
+            while (same(0, u[u.length - 1])) {
+                u.pop();
+            }
+        });
     }
 
 
