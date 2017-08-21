@@ -92,7 +92,9 @@ function getGeneration(cells, generations) {
 
     function same(arr1, arr2) {
         if (Array.isArray(arr1) && Array.isArray(arr2)) {
-            if (arr1.sort().join(',') === arr2.sort().join(',')) {
+            var arr1Copy = [...arr1];
+            var arr2Copy = [...arr2];
+            if (arr1Copy.sort().join(',') === arr2Copy.sort().join(',')) {
                 return true;
             } else {
                 return false;
@@ -114,33 +116,31 @@ function getGeneration(cells, generations) {
                                                     pr = pr < firstHit ? pr : firstHit;
                                                     return pr;})
         temp.push(leftToRight);
-        var leftToRight = arrs.reduce((pr, cr) => {var firstHit = firstNonZero(cr.reverse());
+        var rightToLeft = arrs.reduce((pr, cr) => {var firstHit = firstNonZero(cr.reverse());
             pr = pr < firstHit ? pr : firstHit;
             return pr;})
         temp.push(rightToLeft);
         return temp;
     }
-    //var za  =[[0, 0, 0, 1, 2, 3, 0, 0], [0, 5, 4, 1, 2, 3, 0, 0], [0, 0, 0, 1, 2, 0, 0, 0]]
+    //var za  =[[0, 0, 0, 0, 0, 0, 0, 0],[0, 0, 0, 1, 2, 3, 0, 0], [0, 5, 4, 1, 2, 3, 0, 0], [0, 0, 0, 1, 2, 0, 0, 0],[0, 0, 0, 0, 0, 0, 0, 0]]
     // var arr = [[0, 0, 0], [1, 2, 3], [0, 1, 0], [0, 0, 1], [0, 0, 0], [0, 0, 0]]
     //for [1, 2, 3], [0, 1, 0], [0, 0, 1] need to think about the edge first befor croping
-    function croppedArray(arr) {
-        var deadArray = Array(len + 2).fill(0);
-        var i = 0;
+    function croppedArray(arrs) {
         var n = len + 2;
-        while (same(deadArray, arr[0])) {
-            arr.shift();
-        }
-        while (same(deadArray, arr[arr.length - 1])) {
-            arr.pop();
-        }
-        arr.map((u, i) => {
-            while (same(0, u[0])) {
-                u.shift();
-            }
-            while (same(0, u[u.length - 1])) {
-                u.pop();
-            }
-        });
+        var deadArray = Array(n).fill(0);       
+        while(same(deadArray, arrs[0])) {
+            console.log(same(deadArray, arrs[0]));
+            arrs.shift();}
+        while(same(deadArray, arrs[arrs.length - 1])) {
+            console.log(same(deadArray, arrs[arrs.length - 1]));
+            arrs.pop();}
+        var repeatTimesArr = findRepeatTimes(arrs);
+        console.log("arr",repeatTimesArr);
+
+        arrs.map((u, i) => {
+                for(var j=0; j < repeatTimesArr[1]; j++){u.shift();}
+                for(var j=0; j< repeatTimesArr[0]; j++) {u.pop();}}
+        );
     }
 
 
