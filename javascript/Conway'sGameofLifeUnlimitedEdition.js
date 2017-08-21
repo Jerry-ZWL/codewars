@@ -103,14 +103,21 @@ function getGeneration(cells, generations) {
         }
     }
 
-    function croppedArray(arr, target) {
-
-    }
-
-    function croppedArrays(arrs) {
+    function croppedArray(arr) {
         var deadArray = Array(len + 2).fill(0);
-
+        var i = 0;
+        var n = len + 2;
+        while (same(deadArray, arr[0])) {
+            console.log(same(deadArray, arr[i]));
+            arr.shift();
+        }
+        while (same(deadArray, arr[arr.length - 1])) {
+            console.log(same(deadArray, arr[arr.length - 1]));
+            arr.pop();
+        }
     }
+
+
 
     var valueNow = function(coord, fixmap, mutablemap) {
         var neighborhoodCells = neighborhoodPoints(coord);
