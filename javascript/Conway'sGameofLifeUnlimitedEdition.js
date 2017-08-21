@@ -13,6 +13,23 @@ var array2 = array1.reduce(function(prev, curr) {
     }));
 }, []);
 
+var example = [
+    [
+        [0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0],
+        [0, 0, 0, 1, 0],
+        [0, 1, 1, 1, 0],
+        [0, 0, 0, 0, 0]
+    ],
+    [
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 1, 0, 1, 0],
+        [0, 1, 1, 1, 0],
+        [0, 0, 1, 0, 0]
+    ]
+];
+
 
 
 var gliders = [
@@ -29,19 +46,21 @@ var gliders = [
     [
         [0, 0, 0],
         [1, 0, 1],
-        [0, 1, 1]   
+        [0, 1, 1]
     ]
 ];
 
 function getGeneration(cells, generations) {
-    var len = cells.length;
-    var possbileValue = [...Array(len)].map((u, i) => i);
+    var rows = cells.length;
+    var columns = cells[0].length;
+    var len = rows > columns ? rows : columns;
+    var possbileValue = [...Array(len + 2)].map((u, i) => i);
     var allPoints = possbileValue.reduce(function(prev, curr) {
         return prev.concat(possbileValue.map((u, i) => [curr, u]));
     }, []);
     var pointsValueMap = allPoints.reduce((p, c) => {
         var obj = p;
-        obj[c] = cells[c[0]][c[1]];
+        obj[c] = cells[c[0] - 1] && cells[c[0] - 1][c[1] - 1] ? cells[c[0] - 1][c[1] - 1] : 0;
         return p;
     }, {});
 
@@ -60,6 +79,39 @@ function getGeneration(cells, generations) {
             [x + 1, y + 1]
         ];
     };
+
+    function mapToArray(map) {
+        var singleArray = Object.keys(map).map((key) => map[key]);
+        var temp = [];
+        var n = len + 2;
+        for (var i = 0; i < singleArray.length; i += n) {
+            temp.push(singleArray.slice(i, i + n));
+        }
+        return temp;
+    }
+
+    function same(arr1, arr2) {
+        if (Array.isArray(arr1) && Array.isArray(arr2)) {
+            if (arr1.sort().join(',') === arr2.sort().join(',')) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (arr1 == arr2) return true;
+            else return false;
+        }
+    }
+
+    function croppedArray(arr, target) {
+
+    }
+
+    function croppedArrays(arrs) {
+        var deadArray = Array(len + 2).fill(0);
+
+    }
+
     var valueNow = function(coord, fixmap, mutablemap) {
         var neighborhoodCells = neighborhoodPoints(coord);
         var it = fixmap[coord];
@@ -82,34 +134,35 @@ function getGeneration(cells, generations) {
             }
         }
     };
-   
+
+    var edgedCells = mapToArray(pointsValueMap);
+
     // var mutableMap = Object.assign({}, pointsValueMap)
     var CopyCells = cells.map(function(arr) {
-        return  arr.slice();
+        return arr.slice();
     })
-    var CopyPointsValueMap = Object.assign({}, pointsValueMap); 
-    console.log('cells', cells);
-    console.log('CopyCells', CopyCells);
+    var CopyPointsValueMap = Object.assign({}, pointsValueMap);
+    console.log('edgedCells', edgedCells);
     console.log('CopyPointsValueMap', CopyPointsValueMap);
-    function evolve (CopyPointsValueMap){
+
+    function evolve(CopyPointsValueMap) {
         var mutableMap = Object.assign({}, CopyPointsValueMap);
         console.log('allPoints ', allPoints);
         allPoints.reduce(function(pre, curr) {
             valueNow(curr, CopyPointsValueMap, mutableMap);
         }, 0);
-        allPoints.map((v, i) => { CopyCells[v[0]][v[1]] = mutableMap[v]; });
+        allPoints.map((v, i) => { edgedCells[v[0]][v[1]] = mutableMap[v]; });
     }
 
     if (generations == 1) {
-       evolve(CopyPointsValueMap);
-       return CopyCells;
-    } else if (generations == 0){
-        return cells;
-    }
-    else{
         evolve(CopyPointsValueMap);
-        console.log('inCursive ',  CopyCells);
-        return getGeneration (CopyCells, generations -1);
+        return CopyCells;
+    } else if (generations == 0) {
+        return cells;
+    } else {
+        evolve(CopyPointsValueMap);
+        console.log('inCursive ', CopyCells);
+        return getGeneration(CopyCells, generations - 1);
     }
 }
 
